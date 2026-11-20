@@ -1,0 +1,33 @@
+:root { color-scheme: light; font-family: system-ui, sans-serif; color: #23352d; background: #f2f5f1; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { width: min(100% - 32px, 680px); margin: 40px auto; }
+header { margin-bottom: 28px; }
+h1 { font-size: 34px; margin: 4px 0 10px; letter-spacing: -1px; }
+h2 { font-size: 21px; margin: 0 0 20px; }
+p { line-height: 1.5; }
+.eyebrow { color: #456d56; text-transform: uppercase; letter-spacing: 2px; font-size: 12px; font-weight: 700; }
+.card { padding: 26px; background: white; border: 1px solid #dce5dc; border-radius: 20px; margin-bottom: 18px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 16px; min-width: 0; }
+input, select, textarea, button { font: inherit; min-height: 46px; border-radius: 9px; }
+input, select, textarea { display: block; width: 100%; min-width: 0; margin-top: 8px; padding: 11px; border: 1px solid #b7c7bc; background: #fff; color: #23352d; }
+textarea { resize: vertical; }
+button { padding: 11px 18px; border: 1px solid #245c40; background: #245c40; color: white; cursor: pointer; font-weight: 600; }
+button:hover { filter: brightness(.93); }
+button.secondary { background: #f3f7f3; color: #245c40; border-color: #cbd9cc; }
+#toggle-category { margin-bottom: 18px; }
+#category-panel { padding: 16px; background: #f3f7f3; border-radius: 12px; margin-bottom: 18px; }
+:focus-visible { outline: 3px solid #ba7b28; outline-offset: 3px; }
+.muted { color: #637367; font-weight: 400; font-size: 14px; }
+.error { color: #a52c24; font-size: 14px; }
+.error:empty, #status:empty { display: none; }
+.total { font-size: 38px; font-weight: 700; margin: 0 0 24px; overflow-wrap: anywhere; }
+.presets { display: flex; flex-wrap: wrap; gap: 8px; }
+[aria-pressed="true"] { box-shadow: inset 0 0 0 2px #245c40; }
+ul { list-style: none; padding: 0; margin: 0; }
+li { padding: 18px 0; border-top: 1px solid #e1e8e1; overflow-wrap: anywhere; }
+.expense-top { display: flex; justify-content: space-between; gap: 16px; align-items: baseline; }
+.expense-amount { font-size: 20px; white-space: nowrap; }
+.expense-comment { white-space: pre-wrap; margin-bottom: 0; }
+@media (max-width: 480px) { main { margin: 24px auto; } .card { padding: 20px; } .grid { grid-template-columns: 1fr; gap: 0; } .expense-top { flex-wrap: wrap; gap: 6px; } h1 { font-size: 30px; } }

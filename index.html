@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Мои расходы</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+<main>
+  <header><p class="eyebrow">Личный учёт</p><h1>Мои расходы</h1><p>Записывайте траты — всё останется в этом браузере.</p></header>
+  <section class="card" aria-labelledby="add-title">
+    <h2 id="add-title">Добавить трату</h2>
+    <form id="expense-form" novalidate>
+      <div class="grid">
+        <label>Сумма, ₸<input id="amount" inputmode="numeric" placeholder="Например, 5 000" required aria-describedby="form-error"></label>
+        <label>Категория<select id="category" required></select></label>
+      </div>
+      <button id="toggle-category" type="button" class="secondary" aria-expanded="false" aria-controls="category-panel">Добавить категорию</button>
+      <div id="category-panel" hidden>
+        <label>Новая категория<input id="new-category" maxlength="80" aria-describedby="category-error"></label>
+        <button id="save-category" type="button" class="secondary">Сохранить категорию</button>
+        <p id="category-error" class="error" role="alert"></p>
+      </div>
+      <label>Дата<input id="date" type="date" required></label>
+      <label>Комментарий <span class="muted">· необязательно</span><textarea id="comment" rows="2" maxlength="1000" placeholder="На что потратили?"></textarea></label>
+      <p id="form-error" class="error" role="alert"></p>
+      <button type="submit">Добавить трату</button>
+      <p id="status" class="muted" role="status"></p>
+    </form>
+  </section>
+  <section class="card" aria-labelledby="total-title">
+    <h2 id="total-title">Итог за текущий месяц</h2>
+    <p id="total" class="total" aria-live="polite">0 ₸</p>
+    <div class="grid">
+      <label>С даты<input type="date" id="period-start"></label>
+      <label>По дату<input type="date" id="period-end"></label>
+    </div>
+    <div id="presets" class="presets" aria-label="Быстрый выбор периода">
+      <button type="button" class="secondary" data-days="1">Сутки</button>
+      <button type="button" class="secondary" data-days="7">7 дней</button>
+      <button type="button" class="secondary" data-days="14">14 дней</button>
+      <button type="button" class="secondary" data-days="month">Месяц</button>
+    </div>
+    <p id="period-error" class="error" role="alert"></p>
+  </section>
+  <section class="card" aria-labelledby="list-title"><h2 id="list-title">Все траты</h2><p id="empty" class="muted">Пока нет трат. Добавьте первую.</p><ul id="expenses"></ul></section>
+</main>
+</body>
+</html>
