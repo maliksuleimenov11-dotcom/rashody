@@ -72,6 +72,19 @@ function renderTotal() {
   $('total').textContent = valid ? money(state.expenses.reduce((sum, item) => sum + (item.date >= start && item.date <= end ? item.amount : 0), 0)) : '—';
 }
 
+function updateBudgetAmounts() {
+  const month = $('budget-month').value;
+  state.categories.forEach((name, index) => {
+    const spentNode = $(`budget-spent-${index}`);
+    const remainingNode = $(`budget-remaining-${index}`);
+    if (!spentNode || !remainingNode) return;
+    const spent = state.expenses.reduce((sum, item) => sum + (item.category === name && item.date.slice(0, 7) === month ? item.amount : 0), 0);
+    const budget = state.budgets.find((item) => item.month === month && item.category === name);
+    spentNode.textContent = `Потрачено: ${money(spent)}`;
+    remainingNode.textContent = `Осталось: ${budget ? money(budget.limit - spent) : '—'}`;
+  });
+}
+
 function renderBudgets(focusIndex) {
   const month = $('budget-month').value;
   const valid = validMonth(month);
@@ -116,6 +129,14 @@ function renderBudgets(focusIndex) {
     status.className = 'muted';
     status.setAttribute('role', 'status');
     form.append(heading, current, label, actions, error, status);
+    const amounts = document.createElement('div');
+    amounts.setAttribute('aria-live', 'polite');
+    const spent = document.createElement('p');
+    spent.id = `budget-spent-${index}`;
+    const remaining = document.createElement('p');
+    remaining.id = `budget-remaining-${index}`;
+    amounts.append(spent, remaining);
+    form.append(amounts);
     $('budget-categories').append(form);
     form.addEventListener('submit', (event) => {
       event.preventDefault();
@@ -140,6 +161,7 @@ function renderBudgets(focusIndex) {
       input.value = money(limit).replace(' ₸', '');
       remove.hidden = false;
       status.textContent = 'Лимит сохранён.';
+      updateBudgetAmounts();
     });
     remove.addEventListener('click', () => {
       error.textContent = '';
@@ -151,6 +173,7 @@ function renderBudgets(focusIndex) {
       }
     });
   });
+  updateBudgetAmounts();
   if (focusIndex !== undefined) $(`budget-limit-${focusIndex}`).focus();
 }
 
@@ -251,6 +274,7 @@ $('expense-form').addEventListener('submit', (event) => {
   $('comment').value = '';
   $('status').textContent = 'Трата добавлена.';
   renderExpenses();
+  updateBudgetAmounts();
   $('amount').focus();
 });
 $('presets').addEventListener('click', (event) => {
