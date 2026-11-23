@@ -74,6 +74,20 @@ function renderTotal() {
 
 function updateBudgetAmounts() {
   const month = $('budget-month').value;
+  const valid = validMonth(month);
+  $('budget-summary').hidden = !valid;
+  if (!valid) return;
+  const budgets = state.budgets.filter((item) => item.month === month);
+  const total = budgets.reduce((sum, item) => sum + item.limit, 0);
+  const spentTotal = state.expenses.reduce((sum, item) => sum + (item.date.slice(0, 7) === month ? item.amount : 0), 0);
+  const hasLimits = budgets.length > 0;
+  const exceededTotal = hasLimits && spentTotal > total;
+  $('budget-total').textContent = `Общий бюджет: ${hasLimits ? money(total) : 'Не задан'}`;
+  $('budget-spent').textContent = `Всего потрачено: ${money(spentTotal)}`;
+  $('budget-remaining').textContent = `Общий остаток: ${hasLimits ? money(total - spentTotal) : '—'}`;
+  $('budget-remaining').className = exceededTotal ? 'budget-warning' : '';
+  $('budget-incomplete').textContent = hasLimits && budgets.length < state.categories.length ? 'Лимиты заданы не всем категориям' : '';
+  $('budget-warning').textContent = exceededTotal ? `Перерасход бюджета на ${money(spentTotal - total)}` : '';
   state.categories.forEach((name, index) => {
     const spentNode = $(`budget-spent-${index}`);
     const remainingNode = $(`budget-remaining-${index}`);
@@ -94,6 +108,7 @@ function renderBudgets(focusIndex) {
   const valid = validMonth(month);
   $('budget-month-error').textContent = valid ? '' : 'Выберите месяц и год бюджета.';
   $('budget-categories').replaceChildren();
+  $('budget-summary').hidden = !valid;
   if (!valid) return;
   state.categories.forEach((name, index) => {
     const saved = state.budgets.find((item) => item.month === month && item.category === name);
