@@ -82,6 +82,10 @@ function updateBudgetAmounts() {
     const budget = state.budgets.find((item) => item.month === month && item.category === name);
     spentNode.textContent = `Потрачено: ${money(spent)}`;
     remainingNode.textContent = `Осталось: ${budget ? money(budget.limit - spent) : '—'}`;
+    const warning = $(`budget-warning-${index}`);
+    const exceeded = budget && spent > budget.limit;
+    warning.textContent = exceeded ? `Перерасход на ${money(spent - budget.limit)}` : '';
+    remainingNode.className = exceeded ? 'budget-warning' : '';
   });
 }
 
@@ -135,7 +139,10 @@ function renderBudgets(focusIndex) {
     spent.id = `budget-spent-${index}`;
     const remaining = document.createElement('p');
     remaining.id = `budget-remaining-${index}`;
-    amounts.append(spent, remaining);
+    const warning = document.createElement('p');
+    warning.id = `budget-warning-${index}`;
+    warning.className = 'budget-warning';
+    amounts.append(spent, remaining, warning);
     form.append(amounts);
     $('budget-categories').append(form);
     form.addEventListener('submit', (event) => {

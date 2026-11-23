@@ -33,4 +33,6 @@ li { padding: 18px 0; border-top: 1px solid #e1e8e1; overflow-wrap: anywhere; }
 .budget-category { border-top: 1px solid #e1e8e1; padding: 18px 0; overflow-wrap: anywhere; }
 .budget-category h3 { margin: 0; font-size: 18px; }
 .budget-category [role="status"]:empty { display: none; }
+.budget-warning { color: #a52c24; font-weight: 600; }
+.budget-warning:empty { display: none; }
 @media (max-width: 480px) { main { margin: 24px auto; } .card { padding: 20px; } .grid { grid-template-columns: 1fr; gap: 0; } .expense-top { flex-wrap: wrap; gap: 6px; } h1 { font-size: 30px; } }
