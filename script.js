@@ -3,7 +3,8 @@
 const $ = (id) => document.getElementById(id);
 const storageKey = 'rashody.v1';
 const baseCategories = ['Еда', 'Транспорт', 'Дом'];
-let state = { categories: [...baseCategories], expenses: [] };
+let state = { categories: [...baseCategories], expenses: [], budgets: [] };
+const validMonth = (value) => /^\d{4}-(0[1-9]|1[0-2])$/.test(value) && !value.startsWith('0000');
 const localDate = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 const validDate = (value) => {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || value.startsWith('0000')) return false;
@@ -29,6 +30,14 @@ try {
       if (!state.categories.includes(item.category)) state.categories.push(item.category);
       return true;
     });
+    if (Array.isArray(saved.budgets)) {
+      for (const item of saved.budgets) {
+        if (!item || !validMonth(item.month) || !state.categories.includes(item.category) || !Number.isSafeInteger(item.limit) || item.limit < 0) continue;
+        if (state.budgets.some((entry) => entry.month === item.month && entry.category === item.category)) continue;
+        const total = state.budgets.reduce((sum, entry) => sum + (entry.month === item.month ? entry.limit : 0), 0);
+        if (Number.isSafeInteger(total + item.limit)) state.budgets.push({ month: item.month, category: item.category, limit: item.limit });
+      }
+    }
   }
 } catch {
   $('form-error').textContent = 'Не удалось прочитать сохранённые данные. Проверьте, доступно ли хранилище браузера.';
@@ -61,6 +70,88 @@ function renderTotal() {
   const valid = validDate(start) && validDate(end) && start <= end;
   $('period-error').textContent = valid ? '' : 'Укажите верные даты: начало не позже конца периода.';
   $('total').textContent = valid ? money(state.expenses.reduce((sum, item) => sum + (item.date >= start && item.date <= end ? item.amount : 0), 0)) : '—';
+}
+
+function renderBudgets(focusIndex) {
+  const month = $('budget-month').value;
+  const valid = validMonth(month);
+  $('budget-month-error').textContent = valid ? '' : 'Выберите месяц и год бюджета.';
+  $('budget-categories').replaceChildren();
+  if (!valid) return;
+  state.categories.forEach((name, index) => {
+    const saved = state.budgets.find((item) => item.month === month && item.category === name);
+    const form = document.createElement('form');
+    form.className = 'budget-category';
+    form.noValidate = true;
+    const heading = document.createElement('h3');
+    heading.textContent = name;
+    const current = document.createElement('p');
+    current.className = 'muted';
+    current.textContent = `Лимит: ${saved ? money(saved.limit) : 'Не задан'}`;
+    const label = document.createElement('label');
+    label.textContent = 'Лимит на месяц, ₸';
+    const input = document.createElement('input');
+    input.id = `budget-limit-${index}`;
+    input.inputMode = 'numeric';
+    input.placeholder = 'Например, 15 000';
+    input.value = saved ? money(saved.limit).replace(' ₸', '') : '';
+    const error = document.createElement('p');
+    error.id = `budget-error-${index}`;
+    error.className = 'error';
+    error.setAttribute('role', 'alert');
+    input.setAttribute('aria-describedby', error.id);
+    label.append(input);
+    const actions = document.createElement('div');
+    actions.className = 'presets';
+    const submit = document.createElement('button');
+    submit.type = 'submit';
+    submit.textContent = 'Сохранить лимит';
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'secondary';
+    remove.textContent = 'Убрать лимит';
+    remove.hidden = !saved;
+    actions.append(submit, remove);
+    const status = document.createElement('p');
+    status.className = 'muted';
+    status.setAttribute('role', 'status');
+    form.append(heading, current, label, actions, error, status);
+    $('budget-categories').append(form);
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      error.textContent = '';
+      status.textContent = '';
+      const raw = input.value.trim();
+      const limit = Number(raw.replace(/[ \u00a0\u202f]/g, ''));
+      if (!/^\d+(?:[ \u00a0\u202f]\d{3})*$/.test(raw) || !Number.isSafeInteger(limit) || limit < 0) {
+        error.textContent = 'Введите целое число от нуля, например 15 000.';
+        input.focus();
+        return;
+      }
+      const others = state.budgets.filter((item) => item.month !== month || item.category !== name);
+      const total = others.reduce((sum, item) => sum + (item.month === month ? item.limit : 0), 0);
+      if (!Number.isSafeInteger(total + limit)) {
+        error.textContent = 'Сумма лимитов слишком велика для точного подсчёта.';
+        input.focus();
+        return;
+      }
+      if (!save({ ...state, budgets: [...others, { month, category: name, limit }] }, error.id)) return;
+      current.textContent = `Лимит: ${money(limit)}`;
+      input.value = money(limit).replace(' ₸', '');
+      remove.hidden = false;
+      status.textContent = 'Лимит сохранён.';
+    });
+    remove.addEventListener('click', () => {
+      error.textContent = '';
+      status.textContent = '';
+      const budgets = state.budgets.filter((item) => item.month !== month || item.category !== name);
+      if (save({ ...state, budgets }, error.id)) {
+        renderBudgets(index);
+        $('budget-categories').children[index].querySelector('[role="status"]').textContent = 'Лимит убран.';
+      }
+    });
+  });
+  if (focusIndex !== undefined) $(`budget-limit-${focusIndex}`).focus();
 }
 
 function setPeriod(period) {
@@ -121,6 +212,7 @@ $('save-category').addEventListener('click', () => {
   const existing = state.categories.find((item) => categoryKey(item) === categoryKey(name));
   if (!existing && !save({ ...state, categories: [...state.categories, name] }, 'category-error')) return;
   renderCategories(existing || name);
+  renderBudgets();
   $('new-category').value = '';
   $('category-panel').hidden = true;
   $('toggle-category').setAttribute('aria-expanded', 'false');
@@ -171,6 +263,9 @@ for (const id of ['period-start', 'period-end']) $(id).addEventListener('change'
   renderTotal();
 });
 $('date').value = localDate(new Date());
+$('budget-month').value = localDate(new Date()).slice(0, 7);
+$('budget-month').addEventListener('change', () => renderBudgets());
+renderBudgets();
 renderCategories();
 setPeriod('month');
 renderExpenses();

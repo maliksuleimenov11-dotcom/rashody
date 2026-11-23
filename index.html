@@ -45,6 +45,12 @@
     </div>
     <p id="period-error" class="error" role="alert"></p>
   </section>
+  <section class="card" aria-labelledby="budget-title">
+    <h2 id="budget-title">Бюджет</h2>
+    <label>Месяц бюджета<input id="budget-month" type="month" required aria-describedby="budget-month-error"></label>
+    <p id="budget-month-error" class="error" role="alert"></p>
+    <div id="budget-categories"></div>
+  </section>
   <section class="card" aria-labelledby="list-title"><h2 id="list-title">Все траты</h2><p id="empty" class="muted">Пока нет трат. Добавьте первую.</p><ul id="expenses"></ul></section>
 </main>
 </body>
