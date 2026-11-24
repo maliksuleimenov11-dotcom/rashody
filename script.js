@@ -235,6 +235,30 @@ function renderExpenses() {
       comment.textContent = item.comment;
       li.append(comment);
     }
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'secondary expense-delete';
+    remove.textContent = 'Удалить';
+    remove.setAttribute('aria-label', `Удалить трату: ${money(item.amount)}, ${item.category}, ${date.textContent}`);
+    const error = document.createElement('p');
+    error.id = `expense-error-${state.expenses.indexOf(item)}`;
+    error.className = 'error';
+    error.setAttribute('role', 'alert');
+    remove.setAttribute('aria-describedby', error.id);
+    remove.addEventListener('click', () => {
+      error.textContent = '';
+      if (!window.confirm(`Удалить трату?\n${money(item.amount)}, ${item.category}, ${date.textContent}`)) return;
+      const index = state.expenses.indexOf(item);
+      if (index < 0) return;
+      const expenses = state.expenses.filter((_, position) => position !== index);
+      if (!save({ ...state, expenses }, error.id)) return;
+      renderExpenses();
+      updateBudgetAmounts();
+      const buttons = $('expenses').querySelectorAll('.expense-delete');
+      if (buttons.length) buttons[Math.min(index, buttons.length - 1)].focus();
+      else $('amount').focus();
+    });
+    li.append(remove, error);
     return li;
   }));
   renderTotal();
@@ -291,6 +315,13 @@ $('expense-form').addEventListener('submit', (event) => {
     return;
   }
   const expense = { amount, category: $('category').value, date: $('date').value, comment: $('comment').value.trim() };
+  if (expense.comment.length > 100) {
+    $('form-error').textContent = 'Комментарий — не более 100 символов.';
+    $('comment').focus();
+    return;
+  }
+  if (state.expenses.some((item) => item.amount === expense.amount && item.category === expense.category && item.date === expense.date)
+      && !window.confirm('Похожая трата уже есть. Добавить ещё?')) return;
   if (!save({ ...state, expenses: [expense, ...state.expenses] }, 'form-error')) return;
   $('amount').value = '';
   $('comment').value = '';
