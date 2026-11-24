@@ -1,4 +1,5 @@
 # Учёт расходов
+https://maliksuleimenov11-dotcom.github.io/rashody/
 
 Откройте `index.html` двойным щелчком. Установка и интернет не нужны.
 
