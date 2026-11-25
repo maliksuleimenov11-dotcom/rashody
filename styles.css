@@ -43,7 +43,9 @@ li { padding: 20px 0; border-top: 1px solid #eee; overflow-wrap: anywhere; }
 .expense-top strong { min-width: 0; }
 .expense-amount { font-size: 20px; font-variant-numeric: tabular-nums; }
 .expense-comment { white-space: pre-wrap; margin-bottom: 0; }
-button.expense-delete { margin-top: 12px; color: #c9161d; font-size: 13px; }
+.expense-actions { margin-top: 12px; }
+.expense-actions button { font-size: 13px; }
+button.expense-delete { color: #c9161d; }
 .budget-category { border-top: 1px solid #eee; padding: 18px 0 8px; overflow-wrap: anywhere; }
 .budget-category h3 { margin: 0; font-size: 15px; }
 .budget-category p { margin: 6px 0; font-size: 13px; }

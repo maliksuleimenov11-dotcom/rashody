@@ -4,6 +4,8 @@ const $ = (id) => document.getElementById(id);
 const storageKey = 'rashody.v1';
 const baseCategories = ['Еда', 'Транспорт', 'Дом'];
 let state = { categories: [...baseCategories], expenses: [], budgets: [] };
+let editingExpense = null;
+let expenseFocusIndex = null;
 const validMonth = (value) => /^\d{4}-(0[1-9]|1[0-2])$/.test(value) && !value.startsWith('0000');
 const localDate = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 const validDate = (value) => {
@@ -267,19 +269,48 @@ function renderExpenses() {
       if (buttons.length) buttons[Math.min(index, buttons.length - 1)].focus();
       else $('open-expense').focus();
     });
-    li.append(remove, error);
+    const edit = document.createElement('button');
+    edit.type = 'button';
+    edit.className = 'secondary expense-edit';
+    edit.textContent = 'Изменить';
+    edit.setAttribute('aria-label', `Изменить трату: ${money(item.amount)}, ${item.category}, ${date.textContent}`);
+    edit.setAttribute('aria-haspopup', 'dialog');
+    edit.setAttribute('aria-controls', 'expense-dialog');
+    edit.addEventListener('click', () => openExpense(item));
+    const actions = document.createElement('div');
+    actions.className = 'presets expense-actions';
+    actions.append(edit, remove);
+    li.append(actions, error);
     return li;
   }));
   renderTotal();
 }
 
-$('open-expense').addEventListener('click', () => {
+function openExpense(item = null) {
+  editingExpense = item;
+  expenseFocusIndex = item ? state.expenses.indexOf(item) : null;
   $('status').textContent = '';
+  $('form-error').textContent = '';
+  $('add-title').textContent = item ? 'Изменить трату' : 'Добавить трату';
+  $('save-expense').textContent = item ? 'Сохранить' : 'Добавить трату';
+  $('close-expense').setAttribute('aria-label', 'Закрыть окно траты');
+  $('cancel-expense').hidden = !item;
+  $('amount').value = item ? money(item.amount).replace(' ₸', '') : '';
+  $('comment').value = item ? item.comment : '';
+  $('date').value = item ? item.date : localDate(new Date());
+  renderCategories(item ? item.category : $('category').value);
   $('expense-dialog').showModal();
   $('amount').focus();
-});
+}
+$('open-expense').addEventListener('click', () => openExpense());
 $('close-expense').addEventListener('click', () => $('expense-dialog').close());
-$('expense-dialog').addEventListener('close', () => $('open-expense').focus());
+$('cancel-expense').addEventListener('click', () => $('expense-dialog').close());
+$('expense-dialog').addEventListener('close', () => {
+  const target = expenseFocusIndex === null ? $('open-expense') : $('expenses').querySelectorAll('.expense-edit')[expenseFocusIndex];
+  (target || $('open-expense')).focus();
+  editingExpense = null;
+  expenseFocusIndex = null;
+});
 for (const dialogId of ['expense-dialog', 'category-dialog']) $(dialogId).addEventListener('keydown', (event) => {
   if (event.key !== 'Tab') return;
   const controls = [...$(dialogId).querySelectorAll('button, input, select, textarea')]
@@ -335,7 +366,8 @@ $('expense-form').addEventListener('submit', (event) => {
     $('amount').focus();
     return;
   }
-  if (!Number.isSafeInteger(state.expenses.reduce((sum, item) => sum + item.amount, 0) + amount)) {
+  const others = state.expenses.filter((item) => item !== editingExpense);
+  if (!Number.isSafeInteger(others.reduce((sum, item) => sum + item.amount, 0) + amount)) {
     $('form-error').textContent = 'Сумма слишком велика для точного подсчёта.';
     return;
   }
@@ -354,12 +386,15 @@ $('expense-form').addEventListener('submit', (event) => {
     $('comment').focus();
     return;
   }
-  if (state.expenses.some((item) => item.amount === expense.amount && item.category === expense.category && item.date === expense.date)
+  if (others.some((item) => item.amount === expense.amount && item.category === expense.category && item.date === expense.date)
       && !window.confirm('Похожая трата уже есть. Добавить ещё?')) return;
-  if (!save({ ...state, expenses: [expense, ...state.expenses] }, 'form-error')) return;
+  const expenses = editingExpense
+    ? state.expenses.map((item) => item === editingExpense ? expense : item)
+    : [expense, ...state.expenses];
+  if (!save({ ...state, expenses }, 'form-error')) return;
   $('amount').value = '';
   $('comment').value = '';
-  $('status').textContent = 'Трата добавлена.';
+  $('status').textContent = editingExpense ? 'Трата изменена.' : 'Трата добавлена.';
   renderExpenses();
   updateBudgetAmounts();
   $('expense-dialog').close();

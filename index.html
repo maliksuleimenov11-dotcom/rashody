@@ -24,7 +24,10 @@
       <label>Дата<input id="date" type="date" required></label>
       <label>Комментарий <span class="muted">· необязательно</span><textarea id="comment" rows="2" maxlength="1000" placeholder="На что потратили?"></textarea></label>
       <p id="form-error" class="error" role="alert"></p>
-      <button type="submit">Добавить трату</button>
+      <div class="presets">
+        <button id="save-expense" type="submit">Добавить трату</button>
+        <button id="cancel-expense" type="button" class="secondary" hidden>Отмена</button>
+      </div>
     </form>
   </dialog>
   <dialog id="category-dialog" aria-labelledby="category-title">
