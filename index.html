@@ -10,8 +10,11 @@
 <body>
 <main>
   <header><h1>Расходы<span class="brand-dot" aria-hidden="true">.</span></h1><p>Личный учёт расходов</p></header>
-  <section class="card add-card" aria-labelledby="add-title">
-    <h2 id="add-title">Добавить трату</h2>
+  <dialog id="expense-dialog" aria-labelledby="add-title">
+    <div class="dialog-heading">
+      <h2 id="add-title">Добавить трату</h2>
+      <button id="close-expense" type="button" class="secondary dialog-close" aria-label="Закрыть окно добавления траты">×</button>
+    </div>
     <form id="expense-form" novalidate>
       <div class="grid">
         <label>Сумма, ₸<input id="amount" inputmode="numeric" placeholder="Например, 5 000" required aria-describedby="form-error"></label>
@@ -27,9 +30,8 @@
       <label>Комментарий <span class="muted">· необязательно</span><textarea id="comment" rows="2" maxlength="1000" placeholder="На что потратили?"></textarea></label>
       <p id="form-error" class="error" role="alert"></p>
       <button type="submit">Добавить трату</button>
-      <p id="status" class="muted" role="status"></p>
     </form>
-  </section>
+  </dialog>
   <section class="card total-card" aria-labelledby="total-title">
     <h2 id="total-title">Итог за текущий месяц</h2>
     <p id="total" class="total" aria-live="polite">0 ₸</p>
@@ -59,7 +61,11 @@
     </div>
     <div id="budget-categories"></div>
   </section>
-  <section class="card list-card" aria-labelledby="list-title"><h2 id="list-title">Список трат</h2><p id="empty" class="muted">Пока нет трат. Добавьте первую.</p><ul id="expenses"></ul></section>
+  <section class="card list-card" aria-labelledby="list-title">
+    <div class="list-heading"><h2 id="list-title">Список трат</h2><button id="open-expense" type="button" aria-haspopup="dialog" aria-controls="expense-dialog">Добавить трату</button></div>
+    <p id="status" class="muted" role="status"></p>
+    <p id="empty" class="muted">Пока нет трат. Добавьте первую.</p><ul id="expenses"></ul>
+  </section>
   <footer>Данные сохраняются в этом браузере</footer>
 </main>
 </body>

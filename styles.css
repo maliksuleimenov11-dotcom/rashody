@@ -12,7 +12,12 @@ p { line-height: 1.5; }
 .budget-card { grid-column: 1; grid-row: 2 / span 3; }
 .total-card { grid-column: 2; grid-row: 2; }
 .list-card { grid-column: 2; grid-row: 3; }
-.add-card { grid-column: 2; grid-row: 4; }
+.list-heading, .dialog-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.list-heading h2, .dialog-heading h2 { margin: 0; }
+dialog { width: min(520px, calc(100% - 24px)); max-height: calc(100dvh - 32px); padding: 24px; border: 1px solid #ebebeb; border-radius: 16px; color: #222; background: #fff; overflow-y: auto; box-shadow: 0 20px 80px #0003; }
+dialog::backdrop { background: #0006; }
+body:has(dialog[open]) { overflow: hidden; }
+.dialog-close { flex-shrink: 0; width: 44px; padding: 0; font-size: 26px; }
 footer { grid-column: 1 / -1; padding: 12px 0; }
 .eyebrow { color: #888; text-transform: uppercase; font-size: 10px; letter-spacing: 1.4px; font-weight: 700; margin: 0 0 8px; }
 .grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 16px; }
@@ -59,11 +64,12 @@ button.expense-delete { margin-top: 12px; color: #c9161d; font-size: 13px; }
  main { width: min(100% - 24px, 560px); margin: 20px auto; grid-template-columns: minmax(0, 1fr); gap: 16px; }
  header { align-items: flex-start; flex-direction: column; gap: 4px; }
  header p { margin: 0; }
- .budget-card, .total-card, .list-card, .add-card { grid-column: 1; grid-row: auto; }
+ .budget-card, .total-card, .list-card { grid-column: 1; grid-row: auto; }
  .budget-card { grid-row: 2; }
  .total-card { grid-row: 3; }
  .list-card { grid-row: 4; }
- .add-card { grid-row: 5; }
+ .list-heading { align-items: stretch; flex-direction: column; }
+ dialog { padding: 20px; }
  .card { padding: 20px; }
  .grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
  .expense-top { flex-wrap: wrap; gap: 6px; }

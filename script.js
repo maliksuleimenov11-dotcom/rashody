@@ -265,13 +265,35 @@ function renderExpenses() {
       updateBudgetAmounts();
       const buttons = $('expenses').querySelectorAll('.expense-delete');
       if (buttons.length) buttons[Math.min(index, buttons.length - 1)].focus();
-      else $('amount').focus();
+      else $('open-expense').focus();
     });
     li.append(remove, error);
     return li;
   }));
   renderTotal();
 }
+
+$('open-expense').addEventListener('click', () => {
+  $('status').textContent = '';
+  $('expense-dialog').showModal();
+  $('amount').focus();
+});
+$('close-expense').addEventListener('click', () => $('expense-dialog').close());
+$('expense-dialog').addEventListener('close', () => $('open-expense').focus());
+$('expense-dialog').addEventListener('keydown', (event) => {
+  if (event.key !== 'Tab') return;
+  const controls = [...$('expense-dialog').querySelectorAll('button, input, select, textarea')]
+    .filter((control) => !control.disabled && control.getClientRects().length);
+  const first = controls[0];
+  const last = controls[controls.length - 1];
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+});
 
 $('toggle-category').addEventListener('click', () => {
   const open = $('category-panel').hidden;
@@ -337,7 +359,7 @@ $('expense-form').addEventListener('submit', (event) => {
   $('status').textContent = 'Трата добавлена.';
   renderExpenses();
   updateBudgetAmounts();
-  $('amount').focus();
+  $('expense-dialog').close();
 });
 $('presets').addEventListener('click', (event) => {
   const button = event.target.closest('[data-days]');
