@@ -280,9 +280,9 @@ $('open-expense').addEventListener('click', () => {
 });
 $('close-expense').addEventListener('click', () => $('expense-dialog').close());
 $('expense-dialog').addEventListener('close', () => $('open-expense').focus());
-$('expense-dialog').addEventListener('keydown', (event) => {
+for (const dialogId of ['expense-dialog', 'category-dialog']) $(dialogId).addEventListener('keydown', (event) => {
   if (event.key !== 'Tab') return;
-  const controls = [...$('expense-dialog').querySelectorAll('button, input, select, textarea')]
+  const controls = [...$(dialogId).querySelectorAll('button, input, select, textarea')]
     .filter((control) => !control.disabled && control.getClientRects().length);
   const first = controls[0];
   const last = controls[controls.length - 1];
@@ -296,12 +296,20 @@ $('expense-dialog').addEventListener('keydown', (event) => {
 });
 
 $('toggle-category').addEventListener('click', () => {
-  const open = $('category-panel').hidden;
-  $('category-panel').hidden = !open;
-  $('toggle-category').setAttribute('aria-expanded', String(open));
-  if (open) $('new-category').focus();
+  $('new-category').value = '';
+  $('category-error').textContent = '';
+  $('category-dialog').showModal();
+  $('new-category').focus();
 });
-$('save-category').addEventListener('click', () => {
+$('close-category').addEventListener('click', () => $('category-dialog').close());
+$('cancel-category').addEventListener('click', () => $('category-dialog').close());
+$('category-dialog').addEventListener('close', () => {
+  $('new-category').value = '';
+  $('category-error').textContent = '';
+  $('toggle-category').focus();
+});
+$('category-form').addEventListener('submit', (event) => {
+  event.preventDefault();
   const name = $('new-category').value.trim();
   $('category-error').textContent = '';
   if (!name) {
@@ -314,12 +322,7 @@ $('save-category').addEventListener('click', () => {
   renderCategories(existing || name);
   renderBudgets();
   $('new-category').value = '';
-  $('category-panel').hidden = true;
-  $('toggle-category').setAttribute('aria-expanded', 'false');
-  $('category').focus();
-});
-$('new-category').addEventListener('keydown', (event) => {
-  if (event.key === 'Enter') { event.preventDefault(); $('save-category').click(); }
+  $('category-dialog').close();
 });
 $('expense-form').addEventListener('submit', (event) => {
   event.preventDefault();

@@ -29,7 +29,7 @@ button { min-width: 44px; padding: 11px 18px; border: 1px solid var(--red); back
 button:hover { filter: brightness(.95); }
 button.secondary { background: #fff; color: #333; border-color: #ddd; }
 #toggle-category { margin-bottom: 18px; color: #ce151d; }
-#category-panel { padding: 16px; background: #fafafa; border-radius: 12px; margin-bottom: 18px; }
+#category-dialog { width: min(420px, calc(100% - 24px)); }
 :focus-visible { outline: 3px solid #2675c9; outline-offset: 3px; }
 .muted { color: #737373; font-weight: 400; font-size: 13px; }
 .error { color: #be1620; font-size: 13px; }

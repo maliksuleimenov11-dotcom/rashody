@@ -20,16 +20,25 @@
         <label>Сумма, ₸<input id="amount" inputmode="numeric" placeholder="Например, 5 000" required aria-describedby="form-error"></label>
         <label>Категория<select id="category" required></select></label>
       </div>
-      <button id="toggle-category" type="button" class="secondary" aria-expanded="false" aria-controls="category-panel">Добавить категорию</button>
-      <div id="category-panel" hidden>
-        <label>Новая категория<input id="new-category" maxlength="80" aria-describedby="category-error"></label>
-        <button id="save-category" type="button" class="secondary">Сохранить категорию</button>
-        <p id="category-error" class="error" role="alert"></p>
-      </div>
+      <button id="toggle-category" type="button" class="secondary" aria-haspopup="dialog" aria-controls="category-dialog">Добавить категорию</button>
       <label>Дата<input id="date" type="date" required></label>
       <label>Комментарий <span class="muted">· необязательно</span><textarea id="comment" rows="2" maxlength="1000" placeholder="На что потратили?"></textarea></label>
       <p id="form-error" class="error" role="alert"></p>
       <button type="submit">Добавить трату</button>
+    </form>
+  </dialog>
+  <dialog id="category-dialog" aria-labelledby="category-title">
+    <div class="dialog-heading">
+      <h2 id="category-title">Новая категория</h2>
+      <button id="close-category" type="button" class="secondary dialog-close" aria-label="Закрыть окно новой категории">×</button>
+    </div>
+    <form id="category-form" novalidate>
+      <label>Название<input id="new-category" maxlength="80" aria-describedby="category-error" placeholder="Например, Здоровье"></label>
+      <p id="category-error" class="error" role="alert"></p>
+      <div class="presets">
+        <button id="save-category" type="submit">Создать</button>
+        <button id="cancel-category" type="button" class="secondary">Отмена</button>
+      </div>
     </form>
   </dialog>
   <section class="card total-card" aria-labelledby="total-title">
