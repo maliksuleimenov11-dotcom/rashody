@@ -147,7 +147,12 @@ function renderBudgets(focusIndex) {
     const status = document.createElement('p');
     status.className = 'muted';
     status.setAttribute('role', 'status');
-    form.append(heading, current, label, actions, error, status);
+    const editor = document.createElement('details');
+    editor.className = 'budget-editor';
+    const summary = document.createElement('summary');
+    summary.textContent = 'Изменить лимит';
+    editor.append(summary, label, actions, error, status);
+    form.append(heading, current);
     const amounts = document.createElement('div');
     amounts.setAttribute('aria-live', 'polite');
     const spent = document.createElement('p');
@@ -158,7 +163,7 @@ function renderBudgets(focusIndex) {
     warning.id = `budget-warning-${index}`;
     warning.className = 'budget-warning';
     amounts.append(spent, remaining, warning);
-    form.append(amounts);
+    form.append(amounts, editor);
     $('budget-categories').append(form);
     form.addEventListener('submit', (event) => {
       event.preventDefault();
@@ -196,7 +201,11 @@ function renderBudgets(focusIndex) {
     });
   });
   updateBudgetAmounts();
-  if (focusIndex !== undefined) $(`budget-limit-${focusIndex}`).focus();
+  if (focusIndex !== undefined) {
+    const input = $(`budget-limit-${focusIndex}`);
+    input.closest('details').open = true;
+    input.focus();
+  }
 }
 
 function setPeriod(period) {

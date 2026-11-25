@@ -9,8 +9,8 @@
 </head>
 <body>
 <main>
-  <header><p class="eyebrow">Личный учёт</p><h1>Мои расходы</h1><p>Записывайте траты — всё останется в этом браузере.</p></header>
-  <section class="card" aria-labelledby="add-title">
+  <header><h1>Расходы<span class="brand-dot" aria-hidden="true">.</span></h1><p>Личный учёт расходов</p></header>
+  <section class="card add-card" aria-labelledby="add-title">
     <h2 id="add-title">Добавить трату</h2>
     <form id="expense-form" novalidate>
       <div class="grid">
@@ -30,7 +30,7 @@
       <p id="status" class="muted" role="status"></p>
     </form>
   </section>
-  <section class="card" aria-labelledby="total-title">
+  <section class="card total-card" aria-labelledby="total-title">
     <h2 id="total-title">Итог за текущий месяц</h2>
     <p id="total" class="total" aria-live="polite">0 ₸</p>
     <div class="grid">
@@ -45,8 +45,9 @@
     </div>
     <p id="period-error" class="error" role="alert"></p>
   </section>
-  <section class="card" aria-labelledby="budget-title">
-    <h2 id="budget-title">Бюджет</h2>
+  <section class="card budget-card" aria-labelledby="budget-title">
+    <p class="eyebrow">План и остаток</p>
+    <h2 id="budget-title">Бюджет месяца</h2>
     <label>Месяц бюджета<input id="budget-month" type="month" required aria-describedby="budget-month-error"></label>
     <p id="budget-month-error" class="error" role="alert"></p>
     <div id="budget-summary" aria-live="polite">
@@ -58,7 +59,8 @@
     </div>
     <div id="budget-categories"></div>
   </section>
-  <section class="card" aria-labelledby="list-title"><h2 id="list-title">Все траты</h2><p id="empty" class="muted">Пока нет трат. Добавьте первую.</p><ul id="expenses"></ul></section>
+  <section class="card list-card" aria-labelledby="list-title"><h2 id="list-title">Список трат</h2><p id="empty" class="muted">Пока нет трат. Добавьте первую.</p><ul id="expenses"></ul></section>
+  <footer>Данные сохраняются в этом браузере</footer>
 </main>
 </body>
 </html>
